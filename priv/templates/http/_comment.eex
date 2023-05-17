@@ -1,0 +1,23 @@
+<div style="padding-left: <%= level * 5%>px;">
+  <div class="card">
+    <div class="card-body">
+      <blockquote class="blockquote mb-0">
+        <%= if comment.author == "AutoModerator" do %>
+          <p><small>Hidden AutoModerator comment</small></p>
+        <% else %>
+          <%= Earmark.as_html!(comment.body) %>
+        <% end %>
+        
+        <footer class="blockquote-footer">
+          <%= comment.author %>,
+          <small><%= trunc(comment.created_utc) |> DateTime.from_unix!() |> DateTime.to_iso8601() %></small>
+        </footer>
+      </blockquote>
+    </div>
+  </div>
+  <br>
+</div>
+
+<%= for reply <- comment.replies do %>
+  <%= EEx.eval_file(comment_template, comment: reply, level: level + 1, comment_template: comment_template) %>
+<% end %>
