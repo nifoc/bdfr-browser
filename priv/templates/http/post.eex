@@ -27,7 +27,7 @@
           <div class="carousel-inner">
             <%= for {img, i} <-  Enum.with_index(media.images) do %>
               <div class="carousel-item <%= if i == 0, do: "active" %>">
-                <img src="<%= img %>" class="d-block w-100">
+                <img src="<%= URI.encode(img) %>" class="d-block w-100">
               </div>
             <% end %>
           </div>
@@ -48,7 +48,7 @@
         <div class="row">
           <%= for video <-  media.videos do %>
             <video controls>
-              <source src="<%= video %>" type="video/mp4">
+              <source src="<%= URI.encode(video) %>" type="video/mp4">
             </video>
           <% end %>
         </div>
