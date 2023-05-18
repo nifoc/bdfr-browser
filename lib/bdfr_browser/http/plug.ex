@@ -138,7 +138,12 @@ defmodule BdfrBrowser.HTTP.Plug do
 
   defp media_path(full_path) do
     base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
-    String.replace(full_path, "#{base_directory}/", "/media/")
+
+    full_path
+    |> String.replace("#{base_directory}/", "/media/")
+    |> String.split("/")
+    |> Enum.map(fn p -> URI.encode(p, &URI.char_unreserved?/1) end)
+    |> Enum.join("/")
   end
 
   defp mime_from_ext(path) do
