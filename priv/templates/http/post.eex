@@ -47,7 +47,7 @@
       <%= unless Enum.empty?(media.videos) do %>
         <div class="row">
           <%= for video <-  media.videos do %>
-            <video controls>
+            <video controls loop>
               <source src="<%= URI.encode(video) %>" type="video/mp4">
             </video>
           <% end %>
