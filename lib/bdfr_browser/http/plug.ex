@@ -104,7 +104,7 @@ defmodule BdfrBrowser.HTTP.Plug do
         {:ok, content} = [post_dir, post] |> Path.join() |> File.read!() |> Jason.decode()
 
         %{
-          title: content["title"],
+          title: extract_title(content["title"]),
           author: content["author"],
           num_comments: content["num_comments"],
           created_utc: content["created_utc"],
@@ -115,12 +115,21 @@ defmodule BdfrBrowser.HTTP.Plug do
     Enum.sort_by(compact_posts, fn p -> p.created_utc end, sort)
   end
 
+  defp extract_title(title) do
+    if String.length(title) == 0 do
+      "Empty Title"
+    else
+      title
+    end
+  end
+
   defp read_post(post, args) do
     base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
     post_dir = Path.join([base_directory | Keyword.fetch!(args, :paths)])
     post_file = "#{post}.json"
 
     {:ok, content} = [post_dir, post_file] |> Path.join() |> File.read!() |> Jason.decode(keys: :atoms)
+
     content
   end
 
