@@ -1,4 +1,4 @@
-{ lib, beamPackages, overrides ? (x: y: {}) }:
+{ lib, beamPackages, overrides ? (x: y: { }) }:
 
 let
   buildRebar3 = lib.makeOverridable beamPackages.buildRebar3;
@@ -44,7 +44,7 @@ let
         sha256 = "1c4dgi8canscyjgddp22mjc69znvwy44wk3r7jrl2wvs6vv76fqn";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     earmark = buildMix rec {
@@ -70,7 +70,7 @@ let
         sha256 = "0md7rhw1ix4fp31bql9scvl4jpijixczm2ky7mxffwq3srvxvc5q";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     enough = buildRebar3 rec {
@@ -83,7 +83,7 @@ let
         sha256 = "18gr9cvjar9rrmcj0crgwjb4np4adfbwcaxijajhwpjzvamwfq04";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     jason = buildMix rec {
@@ -96,7 +96,7 @@ let
         sha256 = "0891p2yrg3ri04p302cxfww3fi16pvvw1kh4r91zg85jhl87k8vr";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     mime = buildMix rec {
@@ -109,7 +109,7 @@ let
         sha256 = "0szzdfalafpawjrrwbrplhkgxjv8837mlxbkpbn5xlj4vgq0p8r7";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     plug = buildMix rec {
@@ -148,7 +148,7 @@ let
         sha256 = "0hnqgzc3zas7j7wycgnkkdhaji5farkqccy2n4p1gqj5ccfrlm16";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     ranch = buildRebar3 rec {
@@ -161,7 +161,7 @@ let
         sha256 = "1rfz5ld54pkd2w25jadyznia2vb7aw9bclck21fizargd39wzys9";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     systemd = buildRebar3 rec {
@@ -187,8 +187,9 @@ let
         sha256 = "1mgyx9zw92g6w8fp9pblm3b0bghwxwwcbslrixq23ipzisfwxnfs";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
   };
-in self
+in
+self
 

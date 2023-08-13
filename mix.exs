@@ -21,6 +21,8 @@ defmodule BdfrBrowser.MixProject do
   defp deps do
     [
       {:plug_cowboy, "~> 2.6"},
+      {:ecto_sql, "~> 3.10"},
+      {:postgrex, "~> 0.17"},
       {:jason, "~> 1.4"},
       {:earmark, "~> 1.4"},
       {:systemd, "~> 0.6"}

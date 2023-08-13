@@ -1,4 +1,4 @@
-<div style="padding-left: <%= level * 5%>px;">
+<div style="padding-left: <%= level * 5 %>px;">
   <div class="card">
     <div class="card-body">
       <blockquote class="blockquote mb-0">
@@ -10,7 +10,7 @@
         
         <footer class="blockquote-footer">
           <%= comment.author %>,
-          <small><%= trunc(comment.created_utc) |> DateTime.from_unix!() |> DateTime.to_iso8601() %></small>
+          <small><%= DateTime.to_iso8601(comment.posted_at) %></small>
         </footer>
       </blockquote>
     </div>
@@ -18,6 +18,6 @@
   <br>
 </div>
 
-<%= for reply <- comment.replies do %>
+<%= for reply <- BdfrBrowser.Repo.preload(comment, :children).children do %>
   <%= EEx.eval_file(comment_template, comment: reply, level: level + 1, comment_template: comment_template) %>
 <% end %>

@@ -19,9 +19,9 @@
           <%= for post <- posts do %>
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title"><a href="/r/<%= subreddit %>/<%= date %>/<%= URI.encode(post.filename, &URI.char_unreserved?/1) %>"><%= post.title %></a></h5>
+                <h5 class="card-title"><a href="/r/<%= subreddit %>/<%= date %>/<%= post.id %>"><%= post.title %></a></h5>
                 <h6 class="card-subtitle mb-2 text-body-secondary">
-                  <%= post.num_comments %> comment(s) - <%= trunc(post.created_utc) |> DateTime.from_unix!() |> DateTime.to_iso8601() %>
+                  <%= post.num_comments %> comment(s) - <%= DateTime.to_iso8601(post.posted_at) %>
                 </h6>
               </div>
             </div>

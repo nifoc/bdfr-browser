@@ -1,12 +1,14 @@
 defmodule BdfrBrowser.HTTP.Plug do
   use Plug.Router
 
+  alias BdfrBrowser.{Repo, Post, Subreddit}
+
   plug :match
   plug :dispatch
 
   get "/" do
     tpl_params = [
-      subreddits: list_folders(sort: :asc)
+      subreddits: Subreddit.names() |> Repo.all()
     ]
 
     tpl_file = Application.app_dir(:bdfr_browser, "priv/templates/http/index.eex")
@@ -18,9 +20,11 @@ defmodule BdfrBrowser.HTTP.Plug do
   end
 
   get "/r/:subreddit" do
+    subreddit_record = Repo.get_by(Subreddit, name: subreddit)
+
     tpl_params = [
       subreddit: subreddit,
-      dates: list_folders(paths: [subreddit])
+      dates: subreddit_record |> Post.date_listing() |> Repo.all()
     ]
 
     tpl_file = Application.app_dir(:bdfr_browser, "priv/templates/http/subreddit.eex")
@@ -32,10 +36,12 @@ defmodule BdfrBrowser.HTTP.Plug do
   end
 
   get "/r/:subreddit/:date" do
+    subreddit_record = Repo.get_by(Subreddit, name: subreddit)
+
     tpl_params = [
       subreddit: subreddit,
       date: date,
-      posts: read_posts(paths: [subreddit, date], ext: ".json")
+      posts: subreddit_record |> Post.during_month(date) |> Repo.all()
     ]
 
     tpl_file = Application.app_dir(:bdfr_browser, "priv/templates/http/subreddit_posts.eex")
@@ -46,12 +52,14 @@ defmodule BdfrBrowser.HTTP.Plug do
     |> send_resp(200, content)
   end
 
-  get "/r/:subreddit/:date/:post" do
+  get "/r/:subreddit/:date/:id" do
+    post_record = Post |> Repo.get(id) |> Repo.preload(comments: :children)
+
     tpl_params = [
       subreddit: subreddit,
       date: date,
-      post: read_post(post, paths: [subreddit, date]),
-      media: post_media(post, paths: [subreddit, date]),
+      post: post_record,
+      media: post_media(post_record.filename, paths: [subreddit, date]),
       comment_template: Application.app_dir(:bdfr_browser, "priv/templates/http/_comment.eex")
     ]
 
@@ -73,65 +81,20 @@ defmodule BdfrBrowser.HTTP.Plug do
     |> send_resp(200, media)
   end
 
+  get "/_import" do
+    :ok = BdfrBrowser.Importer.background_import()
+    send_resp(conn, 200, "IMPORTING")
+  end
+
+  get "/_ping" do
+    send_resp(conn, 200, "PONG")
+  end
+
   match _ do
     send_resp(conn, 404, "Not Found")
   end
 
   # Helper
-
-  defp list_folders(args) do
-    paths = Keyword.get(args, :paths, [])
-    extname = Keyword.get(args, :ext, "")
-    sort = Keyword.get(args, :sort, :desc)
-    base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
-
-    [base_directory | paths]
-    |> Path.join()
-    |> File.ls!()
-    |> Enum.filter(fn s -> not String.starts_with?(s, ".") and Path.extname(s) == extname end)
-    |> Enum.sort_by(&String.downcase/1, sort)
-  end
-
-  defp read_posts(args) do
-    posts = list_folders(args)
-    sort = Keyword.get(args, :sort, :desc)
-
-    base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
-    post_dir = Path.join([base_directory | Keyword.fetch!(args, :paths)])
-
-    compact_posts =
-      for post <- posts do
-        {:ok, content} = [post_dir, post] |> Path.join() |> File.read!() |> Jason.decode()
-
-        %{
-          title: extract_title(content["title"]),
-          author: content["author"],
-          num_comments: content["num_comments"],
-          created_utc: content["created_utc"],
-          filename: Path.basename(post, ".json")
-        }
-      end
-
-    Enum.sort_by(compact_posts, fn p -> p.created_utc end, sort)
-  end
-
-  defp extract_title(title) do
-    if String.length(title) == 0 do
-      "Empty Title"
-    else
-      title
-    end
-  end
-
-  defp read_post(post, args) do
-    base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
-    post_dir = Path.join([base_directory | Keyword.fetch!(args, :paths)])
-    post_file = "#{post}.json"
-
-    {:ok, content} = [post_dir, post_file] |> Path.join() |> File.read!() |> Jason.decode(keys: :atoms)
-
-    content
-  end
 
   defp post_media(post, args) do
     base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
