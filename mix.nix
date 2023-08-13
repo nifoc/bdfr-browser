@@ -47,14 +47,40 @@ let
       beamDeps = [ ];
     };
 
-    earmark = buildMix rec {
-      name = "earmark";
-      version = "1.4.38";
+    db_connection = buildMix rec {
+      name = "db_connection";
+      version = "2.5.0";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "0zzcslyv92gcp4zs3rd1vmw844s1q0fv127m7f7pszhnwh6y6f7r";
+        sha256 = "18jsnmabdjwj3i7ml43ljzrzzvfy1a3bnbaqywgsv7nndji5nbf9";
+      };
+
+      beamDeps = [ telemetry ];
+    };
+
+    decimal = buildMix rec {
+      name = "decimal";
+      version = "2.1.1";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "1k7z418b6cj977wswpxsk5844xrxc1smaiqsmrqpf3pdjzsfbksk";
+      };
+
+      beamDeps = [ ];
+    };
+
+    earmark = buildMix rec {
+      name = "earmark";
+      version = "1.4.39";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "0h547ri1nbxyaisyx7jddg3wib7fpm3q4v914szwvv6bqf79sv0m";
       };
 
       beamDeps = [ earmark_parser ];
@@ -62,15 +88,41 @@ let
 
     earmark_parser = buildMix rec {
       name = "earmark_parser";
-      version = "1.4.32";
+      version = "1.4.33";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "0md7rhw1ix4fp31bql9scvl4jpijixczm2ky7mxffwq3srvxvc5q";
+        sha256 = "13qvlqnii8g6bcz6cl330vjwaan7jy30g1app3yvjncvf8rnhlid";
       };
 
       beamDeps = [ ];
+    };
+
+    ecto = buildMix rec {
+      name = "ecto";
+      version = "3.10.3";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "0crlrpl392pbkzl6ar4z6afna8h9d46wshky1zbr3m344d7cggj4";
+      };
+
+      beamDeps = [ decimal jason telemetry ];
+    };
+
+    ecto_sql = buildMix rec {
+      name = "ecto_sql";
+      version = "3.10.1";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "0sy5277akp828hvcg60yxhpfgj543y2z1bqy2z414pv9ppdmp8pn";
+      };
+
+      beamDeps = [ db_connection ecto postgrex telemetry ];
     };
 
     enough = buildRebar3 rec {
@@ -88,25 +140,25 @@ let
 
     jason = buildMix rec {
       name = "jason";
-      version = "1.4.0";
+      version = "1.4.1";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "0891p2yrg3ri04p302cxfww3fi16pvvw1kh4r91zg85jhl87k8vr";
+        sha256 = "18d70i31bz11nr6vgsjn5prvhkvwqbyf3xq22ck5cnsnzp6ixc7v";
       };
 
-      beamDeps = [ ];
+      beamDeps = [ decimal ];
     };
 
     mime = buildMix rec {
       name = "mime";
-      version = "2.0.3";
+      version = "2.0.5";
 
       src = fetchHex {
         pkg = "${name}";
         version = "${version}";
-        sha256 = "0szzdfalafpawjrrwbrplhkgxjv8837mlxbkpbn5xlj4vgq0p8r7";
+        sha256 = "0p50h0ki8ay5sraiqxiajgwy1829bvyagj65bj9wjny4cnin83fs";
       };
 
       beamDeps = [ ];
@@ -149,6 +201,19 @@ let
       };
 
       beamDeps = [ ];
+    };
+
+    postgrex = buildMix rec {
+      name = "postgrex";
+      version = "0.17.2";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "036r3q250vrhj4nmyr4cc40krjgbyci18qkhppvkj7akx6liiac0";
+      };
+
+      beamDeps = [ db_connection decimal jason ];
     };
 
     ranch = buildRebar3 rec {
