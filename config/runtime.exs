@@ -9,4 +9,5 @@ config :bdfr_browser, BdfrBrowser.Repo,
   database: System.get_env("BDFR_BROWSER_REPO_DATABASE", "postgres"),
   username: System.get_env("BDFR_BROWSER_REPO_USER", "bdfr-browser"),
   password: System.get_env("BDFR_BROWSER_REPO_PASSWORD", ""),
-  hostname: System.get_env("BDFR_BROWSER_REPO_HOST", "localhost")
+  socket_dir: System.get_env("BDFR_BROWSER_REPO_SOCKET_DIR", nil),
+  hostname: System.get_env("BDFR_BROWSER_REPO_HOST", nil)
