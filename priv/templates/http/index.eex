@@ -2,6 +2,8 @@
 
 <div class="row text-center">
   <div class="d-grid gap-2 col-12 mx-auto">
+    <a class="btn btn-outline-primary btn-lg" href="/chats" role="button">Chats</a>
+
     <%= for subreddit <- subreddits do %>
       <a class="btn btn-outline-secondary btn-lg" href="/r/<%= subreddit %>" role="button"><%= subreddit %></a>
     <% end %>

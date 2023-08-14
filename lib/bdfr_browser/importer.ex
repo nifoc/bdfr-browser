@@ -3,7 +3,7 @@ defmodule BdfrBrowser.Importer do
 
   use GenServer
 
-  alias BdfrBrowser.{Comment, Post, Repo, Subreddit}
+  alias BdfrBrowser.{Chat, Comment, Message, Post, Repo, Subreddit}
 
   def start_link([]) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -49,6 +49,22 @@ defmodule BdfrBrowser.Importer do
     List.flatten(result)
   end
 
+  def chats do
+    _ = Logger.info("Importing chats ...")
+
+    result =
+      for chat <- read_chats(directory_key: :chat_directory) do
+        _ = Logger.info("Importing chat `#{chat["id"]}' ...")
+
+        {:ok, chat_record} = import_chat(chat)
+        message_records = for message <- chat["messages"], do: import_message(message, chat_record)
+
+        {chat_record, List.flatten(message_records)}
+      end
+
+    List.flatten(result)
+  end
+
   def background_import do
     GenServer.cast(__MODULE__, :background_import)
   end
@@ -64,6 +80,7 @@ defmodule BdfrBrowser.Importer do
   def handle_cast(:background_import, state) do
     _ = subreddits()
     _ = posts_and_comments()
+    _ = chats()
     {:noreply, state}
   end
 
@@ -73,7 +90,8 @@ defmodule BdfrBrowser.Importer do
     paths = Keyword.get(args, :paths, [])
     extname = Keyword.get(args, :ext, "")
     sort = Keyword.get(args, :sort, :desc)
-    base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
+    directory_key = Keyword.get(args, :directory_key, :base_directory)
+    base_directory = Application.fetch_env!(:bdfr_browser, directory_key)
 
     [base_directory | paths]
     |> Path.join()
@@ -97,6 +115,45 @@ defmodule BdfrBrowser.Importer do
       end
 
     Enum.sort_by(parsed_posts, fn p -> p["created_utc"] end, sort)
+  end
+
+  defp read_chats(args) do
+    directory_key = Keyword.get(args, :directory_key, :chat_directory)
+    base_directory = Application.fetch_env!(:bdfr_browser, directory_key)
+
+    new_chats =
+      for chat <- list_folders([{:ext, ".json"} | args]) do
+        file_path = Path.join([base_directory, chat])
+        parsed = file_path |> File.read!() |> Jason.decode!()
+        Map.put(parsed, "filename", chat)
+      end
+
+    old_chats =
+      for chat <- list_folders([{:ext, ".json_lines"} | args]) do
+        file_path = Path.join([base_directory, chat])
+
+        messages =
+          file_path
+          |> File.stream!()
+          |> Stream.map(&String.trim/1)
+          |> Stream.map(fn line ->
+            {:ok, [author, date, message]} = Jason.decode(line)
+            formatted_date = date |> String.replace(" UTC", "Z") |> String.replace(" ", "T")
+
+            %{
+              "author" => author,
+              "timestamp" => formatted_date,
+              "content" => %{
+                "Message" => message
+              }
+            }
+          end)
+          |> Enum.to_list()
+
+        %{"id" => Path.basename(chat, ".json_lines"), "messages" => messages, "filename" => chat}
+      end
+
+    old_chats ++ new_chats
   end
 
   defp import_post(post, subreddit) do
@@ -141,5 +198,39 @@ defmodule BdfrBrowser.Importer do
     children = for child <- comment["replies"], do: import_comment(child, post, parent)
 
     [parent] ++ children
+  end
+
+  defp import_chat(chat) do
+    id = chat["id"]
+    accounts = for message <- chat["messages"], uniq: true, do: message["author"]
+
+    %Chat{
+      id: id,
+      accounts: accounts
+    }
+    |> Repo.insert(
+      on_conflict: [set: [id: id]],
+      conflict_target: :id
+    )
+  end
+
+  defp import_message(message, chat) do
+    id = :sha3_256 |> :crypto.hash([chat.id, message["timestamp"]]) |> Base.encode16(case: :lower)
+    {:ok, posted_at, 0} = DateTime.from_iso8601(message["timestamp"])
+
+    {:ok, message} =
+      %Message{
+        id: id,
+        author: message["author"],
+        message: message["content"]["Message"],
+        posted_at: posted_at,
+        chat: chat
+      }
+      |> Repo.insert(
+        on_conflict: [set: [id: id]],
+        conflict_target: :id
+      )
+
+    message
   end
 end

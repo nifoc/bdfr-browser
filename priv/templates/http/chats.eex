@@ -1,0 +1,16 @@
+<h2>Chats</h2>
+
+<div class="row text-center">
+  <div class="d-grid gap-2 col-12 mx-auto">
+    <%= for chat <- chats do %>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title"><a href="/chats/<%= URI.encode(chat.id, &URI.char_unreserved?/1) %>"><%= Enum.join(chat.accounts, ", ") %></a></h5>
+          <h6 class="card-subtitle mb-2 text-body-secondary">
+            <%= chat.num_messages %> message(s) - <%= DateTime.to_iso8601(chat.latest_message) %>
+          </h6>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
