@@ -80,7 +80,13 @@ defmodule BdfrBrowser.Importer do
   end
 
   def background_import_changes do
-    GenServer.cast(__MODULE__, :background_import_changes)
+    watch_directories = Application.fetch_env!(:bdfr_browser, :watch_directories)
+
+    if watch_directories == "true" do
+      GenServer.cast(__MODULE__, :background_import_changes)
+    else
+      background_import()
+    end
   end
 
   # Callbacks
@@ -94,10 +100,18 @@ defmodule BdfrBrowser.Importer do
   def handle_continue(:setup_fs, state) do
     base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
     chat_directory = Application.fetch_env!(:bdfr_browser, :chat_directory)
+    watch_directories = Application.fetch_env!(:bdfr_browser, :watch_directories)
 
-    {:ok, pid} = FileSystem.start_link(dirs: [base_directory, chat_directory])
-    :ok = FileSystem.subscribe(pid)
-    {:noreply, %State{state | fs_pid: pid}}
+    fs_pid =
+      if watch_directories == "true" do
+        {:ok, pid} = FileSystem.start_link(dirs: [base_directory, chat_directory])
+        :ok = FileSystem.subscribe(pid)
+        pid
+      else
+        nil
+      end
+
+    {:noreply, %State{state | fs_pid: fs_pid}}
   end
 
   @impl true

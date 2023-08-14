@@ -8,7 +8,7 @@ config :bdfr_browser, BdfrBrowser.Repo,
   migration_foreign_key: [column: :id, type: :string]
 
 config :logger,
-  backends: [],
+  backends: [:console],
   level: :info,
   handle_otp_reports: false,
   handle_sasl_reports: false
