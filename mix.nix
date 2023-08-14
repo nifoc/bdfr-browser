@@ -138,6 +138,19 @@ let
       beamDeps = [ ];
     };
 
+    file_system = buildMix rec {
+      name = "file_system";
+      version = "0.2.10";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "1p0myxmnjjds8bbg69dd6fvhk8q3n7lb78zd4qvmjajnzgdmw6a1";
+      };
+
+      beamDeps = [ ];
+    };
+
     jason = buildMix rec {
       name = "jason";
       version = "1.4.1";
@@ -250,6 +263,19 @@ let
         pkg = "${name}";
         version = "${version}";
         sha256 = "1mgyx9zw92g6w8fp9pblm3b0bghwxwwcbslrixq23ipzisfwxnfs";
+      };
+
+      beamDeps = [ ];
+    };
+
+    typed_struct = buildMix rec {
+      name = "typed_struct";
+      version = "0.3.0";
+
+      src = fetchHex {
+        pkg = "${name}";
+        version = "${version}";
+        sha256 = "0v8v3l8j7g3ran3f9gc2nc1mkj6kwfdr6kshm2cf3r0zlv1xa2y5";
       };
 
       beamDeps = [ ];

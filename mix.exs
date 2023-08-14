@@ -25,6 +25,8 @@ defmodule BdfrBrowser.MixProject do
       {:postgrex, "~> 0.17"},
       {:jason, "~> 1.4"},
       {:earmark, "~> 1.4"},
+      {:file_system, "~> 0.2.10"},
+      {:typed_struct, "~> 0.3.0", runtime: false},
       {:systemd, "~> 0.6"}
     ]
   end

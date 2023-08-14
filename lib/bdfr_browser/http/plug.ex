@@ -117,6 +117,11 @@ defmodule BdfrBrowser.HTTP.Plug do
     send_resp(conn, 200, "IMPORTING")
   end
 
+  post "/_import_changes" do
+    :ok = BdfrBrowser.Importer.background_import_changes()
+    send_resp(conn, 200, "IMPORTING CHANGES")
+  end
+
   get "/_ping" do
     send_resp(conn, 200, "PONG")
   end
