@@ -12,6 +12,6 @@ defmodule BdfrBrowser.Subreddit do
   end
 
   def names do
-    from(s in __MODULE__, select: s.name, order_by: [asc: s.name])
+    from(s in __MODULE__, select: s.name, order_by: [asc: fragment("lower(?)", s.name)])
   end
 end

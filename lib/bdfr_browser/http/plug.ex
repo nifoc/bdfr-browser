@@ -81,7 +81,7 @@ defmodule BdfrBrowser.HTTP.Plug do
     |> send_resp(200, media)
   end
 
-  get "/_import" do
+  post "/_import" do
     :ok = BdfrBrowser.Importer.background_import()
     send_resp(conn, 200, "IMPORTING")
   end
