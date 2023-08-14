@@ -138,6 +138,8 @@
                   BDFR_BROWSER_BASE_DIRECTORY = "/Volumes/MediaScraper/Reddit";
                   BDFR_BROWSER_REPO_USER = db-user;
                   BDFR_BROWSER_REPO_HOST = db-host;
+                  RELEASE_DISTRIBUTION = "none";
+                  RELEASE_COOKIE = "no_dist_anyway";
                 };
 
                 processes = {

@@ -7,12 +7,8 @@ defmodule BdfrBrowser.HTTP.Plug do
   plug :dispatch
 
   get "/" do
-    tpl_params = [
-      subreddits: Subreddit.names() |> Repo.all()
-    ]
-
-    tpl_file = Application.app_dir(:bdfr_browser, "priv/templates/http/index.eex")
-    content = EEx.eval_file(tpl_file, tpl_params)
+    tpl_args = [subreddits: Subreddit.names() |> Repo.all()]
+    content = render_template("index", tpl_args)
 
     conn
     |> put_resp_header("content-type", "text/html; charset=utf-8")
@@ -22,13 +18,12 @@ defmodule BdfrBrowser.HTTP.Plug do
   get "/r/:subreddit" do
     subreddit_record = Repo.get_by(Subreddit, name: subreddit)
 
-    tpl_params = [
+    tpl_args = [
       subreddit: subreddit,
       dates: subreddit_record |> Post.date_listing() |> Repo.all()
     ]
 
-    tpl_file = Application.app_dir(:bdfr_browser, "priv/templates/http/subreddit.eex")
-    content = EEx.eval_file(tpl_file, tpl_params)
+    content = render_template("subreddit", tpl_args)
 
     conn
     |> put_resp_header("content-type", "text/html; charset=utf-8")
@@ -38,14 +33,13 @@ defmodule BdfrBrowser.HTTP.Plug do
   get "/r/:subreddit/:date" do
     subreddit_record = Repo.get_by(Subreddit, name: subreddit)
 
-    tpl_params = [
+    tpl_args = [
       subreddit: subreddit,
       date: date,
       posts: subreddit_record |> Post.during_month(date) |> Repo.all()
     ]
 
-    tpl_file = Application.app_dir(:bdfr_browser, "priv/templates/http/subreddit_posts.eex")
-    content = EEx.eval_file(tpl_file, tpl_params)
+    content = render_template("subreddit_posts", tpl_args)
 
     conn
     |> put_resp_header("content-type", "text/html; charset=utf-8")
@@ -55,7 +49,7 @@ defmodule BdfrBrowser.HTTP.Plug do
   get "/r/:subreddit/:date/:id" do
     post_record = Post |> Repo.get(id) |> Repo.preload(comments: :children)
 
-    tpl_params = [
+    tpl_args = [
       subreddit: subreddit,
       date: date,
       post: post_record,
@@ -63,12 +57,25 @@ defmodule BdfrBrowser.HTTP.Plug do
       comment_template: Application.app_dir(:bdfr_browser, "priv/templates/http/_comment.eex")
     ]
 
-    tpl_file = Application.app_dir(:bdfr_browser, "priv/templates/http/post.eex")
-    content = EEx.eval_file(tpl_file, tpl_params)
+    content = render_template("post", tpl_args)
 
     conn
     |> put_resp_header("content-type", "text/html; charset=utf-8")
     |> send_resp(200, content)
+  end
+
+  get "/static/*path" do
+    file_path = Application.app_dir(:bdfr_browser, Path.join("priv/static", path))
+
+    if File.exists?(file_path) do
+      {:ok, file} = File.read(file_path)
+
+      conn
+      |> put_resp_header("content-type", mime_from_ext(file_path))
+      |> send_resp(200, file)
+    else
+      send_resp(conn, 404, "Not Found")
+    end
   end
 
   get "/media/*path" do
@@ -95,6 +102,12 @@ defmodule BdfrBrowser.HTTP.Plug do
   end
 
   # Helper
+
+  defp render_template(name, args) do
+    tpl_file = Application.app_dir(:bdfr_browser, "priv/templates/http/application.eex")
+    embedded_tpl = Application.app_dir(:bdfr_browser, "priv/templates/http/#{name}.eex")
+    EEx.eval_file(tpl_file, embedded_template: embedded_tpl, embedded_args: args)
+  end
 
   defp post_media(post, args) do
     base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
@@ -127,6 +140,8 @@ defmodule BdfrBrowser.HTTP.Plug do
       ".png" -> "image/png"
       ".gif" -> "image/gif"
       ".mp4" -> "video/mp4"
+      ".js" -> "text/javascript"
+      ".css" -> "text/css"
     end
   end
 end

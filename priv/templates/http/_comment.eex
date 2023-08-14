@@ -1,7 +1,7 @@
-<div style="padding-left: <%= level * 5 %>px;">
+<div style="padding-left: <%= level * 5 %>px; margin-bottom: 2px;">
   <div class="card">
-    <div class="card-body">
-      <blockquote class="blockquote mb-0">
+    <div class="card-body" style="padding: 8px;">
+      <blockquote class="blockquote mb-0" style="font-size: 1rem;">
         <%= if comment.author == "AutoModerator" do %>
           <p><small>Hidden AutoModerator comment</small></p>
         <% else %>
@@ -15,7 +15,6 @@
       </blockquote>
     </div>
   </div>
-  <br>
 </div>
 
 <%= for reply <- BdfrBrowser.Repo.preload(comment, :children).children do %>
