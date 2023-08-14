@@ -10,8 +10,8 @@ defmodule BdfrBrowser.Importer do
 
     typedstruct do
       field :fs_pid, pid
-      field :post_changes, [Path.t()], default: []
-      field :chat_changes, [Path.t()], default: []
+      field :post_changes, [Path.t()], default: MapSet.new()
+      field :chat_changes, [Path.t()], default: MapSet.new()
     end
   end
 
@@ -109,11 +109,11 @@ defmodule BdfrBrowser.Importer do
   end
 
   @impl true
-  def handle_cast(:background_import_changes, state) do
+  def handle_cast(:background_import_changes, %State{post_changes: post_changes, chat_changes: chat_changes} = state) do
     _ = subreddits()
-    _ = changed_posts_and_comments(state.post_changes)
-    _ = changed_chats(state.chat_changes)
-    {:noreply, %State{state | post_changes: [], chat_changes: []}}
+    _ = post_changes |> MapSet.to_list() |> changed_posts_and_comments()
+    _ = chat_changes |> MapSet.to_list() |> changed_chats()
+    {:noreply, %State{state | post_changes: MapSet.new(), chat_changes: MapSet.new()}}
   end
 
   @impl true
@@ -126,10 +126,10 @@ defmodule BdfrBrowser.Importer do
     new_state =
       cond do
         String.contains?(path, chat_directory) and ext == ".json" ->
-          %State{state | chat_changes: [path | state.chat_changes]}
+          %State{state | chat_changes: MapSet.put(state.chat_changes, path)}
 
         String.contains?(path, base_directory) and ext == ".json" ->
-          %State{state | post_changes: [path | state.post_changes]}
+          %State{state | post_changes: MapSet.put(state.post_changes, path)}
 
         true ->
           state
