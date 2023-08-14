@@ -59,6 +59,7 @@
           postgres = pkgs.postgresql_15;
 
           inherit (pkgs.stdenv) isDarwin;
+          inherit (pkgs.stdenv) isLinux;
           inherit (gitignore.lib) gitignoreSource;
         in
         {
@@ -97,11 +98,12 @@
               erlang
               elixir
               postgres
-            ] ++ lib.optionals isDarwin (with pkgs.darwin.apple_sdk.frameworks;
-              [
-                CoreFoundation
-                CoreServices
-              ]);
+            ] ++ lib.optionals isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
+              CoreFoundation
+              CoreServices
+            ]) ++ lib.optionals isLinux (with pkgs; [
+              inotify-tools
+            ]);
 
             packages = [
               pkgs.mix2nix
@@ -120,6 +122,13 @@
 
           packages.default = beamPackages.mixRelease {
             inherit pname version;
+
+            buildInputs = [ ] ++ lib.optionals isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
+              CoreFoundation
+              CoreServices
+            ]) ++ lib.optionals isLinux (with pkgs; [
+              inotify-tools
+            ]);
 
             src = gitignoreSource ./.;
             mixNixDeps = import ./mix.nix { inherit lib beamPackages; };
