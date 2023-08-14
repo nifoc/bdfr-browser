@@ -123,6 +123,10 @@
           packages.default = beamPackages.mixRelease {
             inherit pname version;
 
+            buildInputs = [ ] ++ lib.optionals isLinux (with pkgs; [
+              inotify-tools
+            ]);
+
             src = gitignoreSource ./.;
             mixNixDeps = import ./mix.nix { inherit pkgs lib beamPackages; };
           };
