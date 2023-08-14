@@ -15,8 +15,7 @@ defmodule BdfrBrowser.Application do
       {Ecto.Migrator, repos: repos, skip: System.get_env("SKIP_MIGRATIONS") == "true"},
       BdfrBrowser.Repo,
       BdfrBrowser.Importer,
-      {Plug.Cowboy, scheme: :http, plug: BdfrBrowser.HTTP.Plug, options: [ip: http_ip, port: http_port]},
-      :systemd.ready()
+      {Plug.Cowboy, scheme: :http, plug: BdfrBrowser.HTTP.Plug, options: [ip: http_ip, port: http_port]}
     ]
 
     opts = [strategy: :one_for_one, name: BdfrBrowser.Supervisor]
