@@ -1,9 +1,12 @@
-{ lib, beamPackages, overrides ? (x: y: { }) }:
+{ pkgs, lib, beamPackages, overrides ? (x: y: { }) }:
 
 let
   buildRebar3 = lib.makeOverridable beamPackages.buildRebar3;
   buildMix = lib.makeOverridable beamPackages.buildMix;
   buildErlangMk = lib.makeOverridable beamPackages.buildErlangMk;
+
+  inherit (pkgs.stdenv) isDarwin;
+  inherit (pkgs.stdenv) isLinux;
 
   self = packages // (overrides self packages);
 
@@ -147,6 +150,13 @@ let
         version = "${version}";
         sha256 = "1p0myxmnjjds8bbg69dd6fvhk8q3n7lb78zd4qvmjajnzgdmw6a1";
       };
+
+      buildInputs = [ ] ++ lib.optionals isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
+        CoreFoundation
+        CoreServices
+      ]) ++ lib.optionals isLinux (with pkgs; [
+        inotify-tools
+      ]);
 
       beamDeps = [ ];
     };

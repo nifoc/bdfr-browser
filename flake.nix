@@ -123,15 +123,8 @@
           packages.default = beamPackages.mixRelease {
             inherit pname version;
 
-            buildInputs = [ ] ++ lib.optionals isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
-              CoreFoundation
-              CoreServices
-            ]) ++ lib.optionals isLinux (with pkgs; [
-              inotify-tools
-            ]);
-
             src = gitignoreSource ./.;
-            mixNixDeps = import ./mix.nix { inherit lib beamPackages; };
+            mixNixDeps = import ./mix.nix { inherit pkgs lib beamPackages; };
           };
 
           process-compose."${pname}-dev" =
