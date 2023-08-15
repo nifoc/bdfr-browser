@@ -5,7 +5,7 @@
         <%= if comment.author == "AutoModerator" do %>
           <p><small>Hidden AutoModerator comment</small></p>
         <% else %>
-          <%= Earmark.as_html!(comment.body) %>
+          <%= BdfrBrowser.RenderUtils.comment(comment.body) %>
         <% end %>
         
         <footer class="blockquote-footer">
