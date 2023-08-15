@@ -3,7 +3,7 @@ defmodule BdfrBrowser.Comment do
 
   import Ecto.Query, only: [from: 2]
 
-  alias BdfrBrowser.Post
+  alias BdfrBrowser.{Post, Repo}
 
   @primary_key {:id, :string, autogenerate: false}
   @foreign_key_type :string
@@ -17,6 +17,10 @@ defmodule BdfrBrowser.Comment do
     belongs_to :post, Post
     belongs_to :parent, __MODULE__
     has_many :children, __MODULE__, foreign_key: :parent_id
+  end
+
+  def fetch_children!(comment) do
+    Repo.preload(comment, children: from(c in __MODULE__, order_by: [asc: c.posted_at])).children
   end
 
   def by_author(author) do

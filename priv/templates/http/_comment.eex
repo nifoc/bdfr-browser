@@ -17,6 +17,6 @@
   </div>
 </div>
 
-<%= for reply <- BdfrBrowser.Repo.preload(comment, :children).children do %>
+<%= for reply <- BdfrBrowser.Comment.fetch_children!(comment) do %>
   <%= EEx.eval_file(comment_template, comment: reply, level: level + 1, comment_template: comment_template) %>
 <% end %>

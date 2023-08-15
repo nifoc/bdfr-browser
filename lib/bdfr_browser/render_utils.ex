@@ -1,4 +1,8 @@
 defmodule BdfrBrowser.RenderUtils do
+  def selftext(txt) do
+    Earmark.as_html!(txt)
+  end
+
   def comment(cmt) do
     Earmark.as_html!(cmt)
   end

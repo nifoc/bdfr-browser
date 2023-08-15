@@ -8,6 +8,15 @@
   <a href="https://reddit.com<%= post.permalink %>">Open reddit</a>
 </p>
 
+<%= unless is_nil(post.selftext) do %>
+  <div class="row">
+    <blockquote class="blockquote mb-0">
+      <%= BdfrBrowser.RenderUtils.selftext(post.selftext) %>
+    </blockquote>
+  </div>
+  <br>
+<% end %>
+
 <%= unless Enum.empty?(media.images) do %>
   <div id="carouselImages" class="carousel slide">
     <div class="carousel-inner">
@@ -43,6 +52,8 @@
 
 <%= for comment when is_nil(comment.parent_id) <- post.comments do %>
   <div class="row" style="margin-bottom: 4px;">
-    <%= EEx.eval_file(comment_template, comment: comment, level: 0, comment_template: comment_template) %>
+    <div class="d-grid gap-2 col-12 mx-auto">
+      <%= EEx.eval_file(comment_template, comment: comment, level: 0, comment_template: comment_template) %>
+    </div>
   </div>
 <% end %>

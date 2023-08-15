@@ -47,7 +47,7 @@ defmodule BdfrBrowser.HTTP.Plug do
   end
 
   get "/r/:subreddit/:date/:id" do
-    post_record = Post |> Repo.get(id) |> Repo.preload(comments: :children)
+    post_record = id |> Post.get_full() |> Repo.one()
 
     tpl_args = [
       subreddit: subreddit,

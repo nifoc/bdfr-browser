@@ -47,6 +47,20 @@ defmodule BdfrBrowser.Post do
     )
   end
 
+  def get_full(id) do
+    from(p in __MODULE__,
+      where: p.id == ^id,
+      preload: [
+        comments:
+          ^from(c in Comment,
+            where: is_nil(c.parent_id),
+            order_by: [asc: c.posted_at],
+            preload: [children: ^from(c1 in Comment, order_by: [asc: c1.posted_at])]
+          )
+      ]
+    )
+  end
+
   def by_author(author) do
     from(p in __MODULE__,
       join: c in assoc(p, :comments),
