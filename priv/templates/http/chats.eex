@@ -2,7 +2,7 @@
 
 <div class="row text-center">
   <div class="d-grid gap-2 col-12 mx-auto">
-    <%= for chat when chat.num_messages > 5 <- chats do %>
+    <%= for chat when chat.num_messages > 10 and length(chat.accounts) > 1 <- chats do %>
       <div class="card">
         <div class="card-body">
           <h5 class="card-title"><a href="/chats/<%= URI.encode(chat.id, &URI.char_unreserved?/1) %>"><%= Enum.join(chat.accounts, ", ") %></a></h5>
