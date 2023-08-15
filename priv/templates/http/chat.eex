@@ -8,7 +8,7 @@
           <%= BdfrBrowser.RenderUtils.message(message.message) %>
 
           <footer class="blockquote-footer">
-            <%= message.author %>,
+            <a href="/user/<%= message.author %>"><%= message.author %></a>,
             <small><%= DateTime.to_iso8601(message.posted_at) %></small>
           </footer>
         </blockquote>

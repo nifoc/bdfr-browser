@@ -92,7 +92,8 @@ defmodule BdfrBrowser.HTTP.Plug do
     tpl_args = [
       name: name,
       posts: name |> Post.by_author() |> Repo.all(),
-      comments: name |> Comment.by_author() |> Repo.all()
+      comments: name |> Comment.by_author() |> Repo.all(),
+      chats: name |> Chat.by_author() |> Repo.all()
     ]
 
     content = render_template("user", tpl_args)

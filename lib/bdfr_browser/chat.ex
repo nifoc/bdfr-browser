@@ -1,7 +1,7 @@
 defmodule BdfrBrowser.Chat do
   use Ecto.Schema
 
-  import Ecto.Query, only: [from: 2]
+  import Ecto.Query, only: [from: 2, where: 3]
 
   alias BdfrBrowser.Message
 
@@ -20,5 +20,9 @@ defmodule BdfrBrowser.Chat do
       order_by: [desc: max(m.posted_at)],
       group_by: c.id
     )
+  end
+
+  def by_author(author) do
+    listing() |> where([c], ^author in c.accounts)
   end
 end
