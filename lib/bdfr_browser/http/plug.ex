@@ -105,11 +105,33 @@ defmodule BdfrBrowser.HTTP.Plug do
   get "/media/*path" do
     base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
     joined_path = Path.join(path)
-    {:ok, media} = [base_directory, joined_path] |> Path.join() |> File.read()
+    file_path = Path.join([base_directory, joined_path])
 
-    conn
-    |> put_resp_header("content-type", mime_from_ext(joined_path))
-    |> send_resp(200, media)
+    if File.exists?(file_path) do
+      {:ok, media} = File.read(file_path)
+
+      conn
+      |> put_resp_header("content-type", mime_from_ext(file_path))
+      |> send_resp(200, media)
+    else
+      send_resp(conn, 404, "Not Found")
+    end
+  end
+
+  get "/chat_media/*path" do
+    chat_directory = Application.fetch_env!(:bdfr_browser, :chat_directory)
+    joined_path = Path.join(path)
+    file_path = Path.join([chat_directory, "images", joined_path])
+
+    if File.exists?(file_path) do
+      {:ok, media} = File.read(file_path)
+
+      conn
+      |> put_resp_header("content-type", mime_from_ext(file_path))
+      |> send_resp(200, media)
+    else
+      send_resp(conn, 404, "Not Found")
+    end
   end
 
   post "/_import" do
