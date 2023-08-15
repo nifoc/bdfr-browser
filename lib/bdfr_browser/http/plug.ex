@@ -1,7 +1,7 @@
 defmodule BdfrBrowser.HTTP.Plug do
   use Plug.Router
 
-  alias BdfrBrowser.{Chat, Message, Repo, Post, Subreddit}
+  alias BdfrBrowser.{Chat, Comment, Message, Repo, Post, Subreddit}
 
   plug :match
   plug :dispatch
@@ -82,6 +82,20 @@ defmodule BdfrBrowser.HTTP.Plug do
     ]
 
     content = render_template("chat", tpl_args)
+
+    conn
+    |> put_resp_header("content-type", "text/html; charset=utf-8")
+    |> send_resp(200, content)
+  end
+
+  get "/user/:name" do
+    tpl_args = [
+      name: name,
+      posts: name |> Post.by_author() |> Repo.all(),
+      comments: name |> Comment.by_author() |> Repo.all()
+    ]
+
+    content = render_template("user", tpl_args)
 
     conn
     |> put_resp_header("content-type", "text/html; charset=utf-8")
