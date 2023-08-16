@@ -8,7 +8,8 @@ defmodule BdfrBrowser.RenderUtils do
   end
 
   def message(msg) do
-    img_replacement = "<img src=\"/chat_media/\\1\" style=\"max-width: 300px;\" alt=\"Image\" />"
+    img_replacement =
+      "<p class=\"text-center\"><img src=\"/chat_media/\\1\" class=\"img-fluid\" loading=\"lazy\" /></p>"
 
     msg
     |> String.replace(~r/https:\/\/i\.redd\.it\/(.+)/, img_replacement)
