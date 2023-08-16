@@ -343,8 +343,10 @@ defmodule BdfrBrowser.Importer do
         conflict_target: :id
       )
 
+    existing_image = message_record.message == "Image" or String.starts_with?(message_record.message, "image")
+
     message_record =
-      if message_record.message == "Image" and String.starts_with?(message_content, "mxc://") do
+      if existing_image and String.starts_with?(message_content, "mxc://") do
         changeset = Ecto.Changeset.change(message_record, %{message: message_content})
         Repo.update(changeset)
       else
