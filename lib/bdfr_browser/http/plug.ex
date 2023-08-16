@@ -160,7 +160,7 @@ defmodule BdfrBrowser.HTTP.Plug do
   end
 
   post "/_cleanup" do
-    :ok = Importer.cleanup_messages()
+    _ = Importer.cleanup_messages()
     send_resp(conn, 200, "CLEANED UP")
   end
 
