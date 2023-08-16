@@ -327,13 +327,14 @@ defmodule BdfrBrowser.Importer do
 
   defp import_message(message, chat) when not is_nil(chat) do
     id = :sha3_256 |> :crypto.hash([chat.id, message["timestamp"]]) |> Base.encode16(case: :lower)
+    message_content = message["content"]["Message"]
     {:ok, posted_at, 0} = DateTime.from_iso8601(message["timestamp"])
 
-    {:ok, message} =
+    {:ok, message_record} =
       %Message{
         id: id,
         author: message["author"],
-        message: message["content"]["Message"],
+        message: message_content,
         posted_at: posted_at,
         chat: chat
       }
@@ -342,6 +343,14 @@ defmodule BdfrBrowser.Importer do
         conflict_target: :id
       )
 
-    message
+    message_record =
+      if message_record.message == "Image" and String.starts_with?(message_content, "mxc://") do
+        changeset = Ecto.Changeset.change(message_record, %{message: message_content})
+        Repo.update(changeset)
+      else
+        message_record
+      end
+
+    message_record
   end
 end
