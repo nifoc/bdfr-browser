@@ -5,6 +5,8 @@ defmodule BdfrBrowser.Importer do
 
   alias BdfrBrowser.{Chat, Comment, Message, Post, Repo, Subreddit}
 
+  @image_extensions [".jpg", ".jpeg", ".gif", ".png", ".webp"]
+
   defmodule State do
     use TypedStruct
 
@@ -75,6 +77,29 @@ defmodule BdfrBrowser.Importer do
       end
 
     List.flatten(result)
+  end
+
+  def cleanup_messages do
+    all_images = Message.images() |> Repo.all()
+
+    dupes =
+      for image <- all_images, uniq: true do
+        incorrect_id =
+          :sha3_256
+          |> :crypto.hash([image.chat_id, DateTime.to_iso8601(image.posted_at)])
+          |> Base.encode16(case: :lower)
+
+        potential_dupes = Message.potential_duplicates(image) |> Repo.all()
+
+        Enum.filter(potential_dupes, fn msg ->
+          msg.message == "Image" or
+            msg.message == "image" or
+            (msg.id == incorrect_id and String.starts_with?(msg.message, ["mxc://", "https://i.redd.it/"])) or
+            (String.starts_with?(msg.message, "image") and String.ends_with?(msg.message, @image_extensions))
+        end)
+      end
+
+    for dupe <- List.flatten(dupes), do: Repo.delete(dupe)
   end
 
   def background_import do
@@ -326,7 +351,7 @@ defmodule BdfrBrowser.Importer do
   end
 
   defp import_message(message, chat) when not is_nil(chat) do
-    id = :sha3_256 |> :crypto.hash([chat.id, message["timestamp"]]) |> Base.encode16(case: :lower)
+    id = calculate_message_id(message, chat.id)
     message_content = message["content"]["Message"]
     {:ok, posted_at, 0} = DateTime.from_iso8601(message["timestamp"])
 
@@ -343,7 +368,11 @@ defmodule BdfrBrowser.Importer do
         conflict_target: :id
       )
 
-    existing_image = message_record.message == "Image" or String.starts_with?(message_record.message, "image")
+    existing_image =
+      message_record.message == "Image" or
+        message_record.message == "image" or
+        (String.starts_with?(message_record.message, "image") and
+           String.ends_with?(message_record.message, @image_extensions))
 
     message_record =
       if existing_image and String.starts_with?(message_content, "mxc://") do
@@ -354,5 +383,16 @@ defmodule BdfrBrowser.Importer do
       end
 
     message_record
+  end
+
+  defp calculate_message_id(message, chat_id) do
+    message_content = message["content"]["Message"]
+    is_img = String.starts_with?(message_content, ["mxc://", "https://i.redd.it/"])
+
+    if is_img do
+      :sha3_256 |> :crypto.hash([chat_id, message["timestamp"], message_content]) |> Base.encode16(case: :lower)
+    else
+      :sha3_256 |> :crypto.hash([chat_id, message["timestamp"]]) |> Base.encode16(case: :lower)
+    end
   end
 end

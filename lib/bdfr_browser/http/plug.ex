@@ -1,7 +1,7 @@
 defmodule BdfrBrowser.HTTP.Plug do
   use Plug.Router
 
-  alias BdfrBrowser.{Chat, Comment, Message, Repo, Post, Subreddit}
+  alias BdfrBrowser.{Chat, Comment, Importer, Message, Repo, Post, Subreddit}
 
   plug :match
   plug :dispatch
@@ -150,13 +150,18 @@ defmodule BdfrBrowser.HTTP.Plug do
   end
 
   post "/_import" do
-    :ok = BdfrBrowser.Importer.background_import()
+    :ok = Importer.background_import()
     send_resp(conn, 200, "IMPORTING")
   end
 
   post "/_import_changes" do
-    :ok = BdfrBrowser.Importer.background_import_changes()
+    :ok = Importer.background_import_changes()
     send_resp(conn, 200, "IMPORTING CHANGES")
+  end
+
+  post "/_cleanup" do
+    :ok = Importer.cleanup_messages()
+    send_resp(conn, 200, "CLEANED UP")
   end
 
   get "/_ping" do

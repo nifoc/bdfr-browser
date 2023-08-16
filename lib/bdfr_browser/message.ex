@@ -22,4 +22,18 @@ defmodule BdfrBrowser.Message do
       order_by: [asc: m.posted_at]
     )
   end
+
+  def images do
+    from(m in __MODULE__,
+      where: like(m.message, "mxc://%") or like(m.message, "https://i.redd.it/%"),
+      order_by: [asc: m.posted_at]
+    )
+  end
+
+  def potential_duplicates(other_m) do
+    from(m in __MODULE__,
+      where: m.id != ^other_m.id and m.chat_id == ^other_m.chat_id and m.posted_at == ^other_m.posted_at,
+      order_by: [asc: m.posted_at]
+    )
+  end
 end
