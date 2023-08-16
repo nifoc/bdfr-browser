@@ -25,11 +25,13 @@ defmodule BdfrBrowser.Importer do
     folders = list_folders(sort: :asc)
 
     for folder <- folders do
-      %Subreddit{name: folder}
-      |> Repo.insert(
-        on_conflict: :nothing,
-        conflict_target: :name
-      )
+      subreddit = Repo.get_by(Subreddit, name: folder)
+
+      if is_nil(subreddit) do
+        Repo.insert(%Subreddit{name: folder})
+      else
+        subreddit
+      end
     end
   end
 

@@ -37,7 +37,7 @@ defmodule BdfrBrowser.Post do
 
   def during_range(subreddit, start_date, end_date) do
     from(p in __MODULE__,
-      join: c in assoc(p, :comments),
+      left_join: c in assoc(p, :comments),
       select: %{id: p.id, title: p.title, author: p.author, posted_at: p.posted_at, num_comments: count(c.id)},
       where:
         p.subreddit_id == ^subreddit.id and type(p.posted_at, :date) >= ^start_date and
@@ -63,7 +63,7 @@ defmodule BdfrBrowser.Post do
 
   def by_author(author) do
     from(p in __MODULE__,
-      join: c in assoc(p, :comments),
+      left_join: c in assoc(p, :comments),
       join: s in assoc(p, :subreddit),
       select: %{
         id: p.id,
