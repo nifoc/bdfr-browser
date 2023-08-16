@@ -4,8 +4,22 @@
   <div class="d-grid gap-2 col-12 mx-auto">
     <a class="btn btn-outline-primary btn-lg" href="/chats" role="button">Chats</a>
 
-    <%= for subreddit <- subreddits do %>
+    <%= for subreddit <- subreddits, not String.starts_with?(subreddit, "u_") do %>
       <a class="btn btn-outline-secondary btn-lg" href="/r/<%= subreddit %>" role="button"><%= subreddit %></a>
+    <% end %>
+  </div>
+</div>
+
+<br>
+
+<h2>Archived Users</h2>
+
+<div class="row text-center">
+  <div class="d-grid gap-2 col-12 mx-auto">
+    <%= for user <- subreddits, String.starts_with?(user, "u_") do %>
+      <a class="btn btn-outline-secondary btn-lg" href="/user/<%= String.replace_leading(user, "u_", "") %>" role="button">
+        <%= String.replace_leading(user, "u_", "") %>
+      </a>
     <% end %>
   </div>
 </div>
