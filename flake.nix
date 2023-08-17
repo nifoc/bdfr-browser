@@ -124,7 +124,7 @@
             inherit pname version;
 
             src = gitignoreSource ./.;
-            mixNixDeps = import ./mix.nix { inherit pkgs lib beamPackages; };
+            mixNixDeps = import ./mix.nix { inherit lib beamPackages; };
           };
 
           process-compose."${pname}-dev" =
