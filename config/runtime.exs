@@ -5,7 +5,8 @@ config :bdfr_browser,
   chat_directory: System.get_env("BDFR_BROWSER_CHAT_DIRECTORY", "/nonexistant"),
   watch_directories: System.get_env("BDFR_BROWSER_WATCH_DIRECTORIES", "true"),
   http_ip: to_charlist(System.get_env("BDFR_BROWSER_HTTP_IP", "127.0.0.1")),
-  http_port: String.to_integer(System.get_env("BDFR_BROWSER_HTTP_PORT", "4040"))
+  http_port: String.to_integer(System.get_env("BDFR_BROWSER_HTTP_PORT", "4040")),
+  config_file: YamlElixir.read_from_file!(System.fetch_env!("BDFR_BROWSER_CONFIG_FILE"))
 
 config :bdfr_browser, BdfrBrowser.Repo,
   database: System.get_env("BDFR_BROWSER_REPO_DATABASE", "postgres"),

@@ -14,4 +14,8 @@ defmodule BdfrBrowser.Subreddit do
   def names do
     from(s in __MODULE__, select: s.name, order_by: [asc: fragment("lower(?)", s.name)])
   end
+
+  def names_without(hidden) do
+    from(s in __MODULE__, select: s.name, where: s.name not in ^hidden, order_by: [asc: fragment("lower(?)", s.name)])
+  end
 end

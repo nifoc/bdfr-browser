@@ -24,6 +24,7 @@ defmodule BdfrBrowser.MixProject do
       {:ecto_sql, "~> 3.10"},
       {:postgrex, "~> 0.17"},
       {:jason, "~> 1.4"},
+      {:yaml_elixir, "~> 2.9"},
       {:earmark, "~> 1.4"},
       {:file_system, "~> 0.2.10"},
       {:typed_struct, "~> 0.3.0", runtime: false}

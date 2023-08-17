@@ -7,7 +7,10 @@ defmodule BdfrBrowser.HTTP.Plug do
   plug :dispatch
 
   get "/" do
-    tpl_args = [subreddits: Subreddit.names() |> Repo.all()]
+    config_file = Application.fetch_env!(:bdfr_browser, :config_file)
+    hidden_subreddits = config_file["hidden_subreddits"]
+
+    tpl_args = [subreddits: Subreddit.names_without(hidden_subreddits) |> Repo.all()]
     content = render_template("index", tpl_args)
 
     conn
