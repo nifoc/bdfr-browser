@@ -41,4 +41,26 @@ defmodule BdfrBrowser.Comment do
       group_by: [c.id, p.id, s.name]
     )
   end
+
+  def search(str) do
+    search_str = "%#{str}%"
+
+    from(c in __MODULE__,
+      join: p in assoc(c, :post),
+      join: s in assoc(p, :subreddit),
+      select: %{
+        author: c.author,
+        body: c.body,
+        children: [],
+        posted_at: c.posted_at,
+        subreddit: s.name,
+        post_id: p.id,
+        post_title: p.title,
+        post_date: fragment("to_char(?, 'YYYY-MM')", p.posted_at)
+      },
+      where: ilike(c.body, ^search_str),
+      order_by: [desc: c.posted_at],
+      group_by: [c.id, p.id, s.name]
+    )
+  end
 end

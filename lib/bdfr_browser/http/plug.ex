@@ -106,6 +106,32 @@ defmodule BdfrBrowser.HTTP.Plug do
     |> send_resp(200, content)
   end
 
+  get "/search" do
+    conn = Plug.Conn.fetch_query_params(conn)
+    params = conn.query_params
+
+    {tpl, tpl_args} =
+      if not is_nil(params["comment"]) and String.length(params["comment"]) > 0 do
+        search = params["comment"]
+
+        {"search_comments", [search: search, comments: search |> Comment.search() |> Repo.all()]}
+      else
+        search = params["post"]
+
+        {"search_posts",
+         [
+           search: search,
+           posts: search |> Post.search() |> Repo.all()
+         ]}
+      end
+
+    content = render_template(tpl, tpl_args)
+
+    conn
+    |> put_resp_header("content-type", "text/html; charset=utf-8")
+    |> send_resp(200, content)
+  end
+
   get "/static/*path" do
     file_path = Application.app_dir(:bdfr_browser, Path.join("priv/static", path))
 

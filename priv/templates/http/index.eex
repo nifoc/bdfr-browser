@@ -1,9 +1,33 @@
-<h2>Archived Subreddits</h2>
+<h1>BDFR Browser</h1>
 
 <div class="row text-center">
   <div class="d-grid gap-2 col-12 mx-auto">
     <a class="btn btn-outline-primary btn-lg" href="/chats" role="button">Chats</a>
+  </div>
+</div>
 
+<br>
+
+<form method="get" action="/search" class="row justify-content-center">
+  <div class="col-md-4">
+    <input type="text" class="form-control" placeholder="Post" name="post" />
+  </div>
+
+  <div class="col-md-4">
+    <input type="text" class="form-control" placeholder="Comment" name="comment" />
+  </div>
+
+  <div class="col-md-2 text-center">
+    <button type="submit" class="btn btn-primary">Search</button>
+  </div>
+</form>
+
+<br>
+
+<h2>Archived Subreddits</h2>
+
+<div class="row text-center">
+  <div class="d-grid gap-2 col-12 mx-auto">
     <%= for subreddit <- subreddits, not String.starts_with?(subreddit, "u_") do %>
       <a class="btn btn-outline-secondary btn-lg" href="/r/<%= subreddit %>" role="button"><%= subreddit %></a>
     <% end %>
@@ -23,3 +47,5 @@
     <% end %>
   </div>
 </div>
+
+<br>
