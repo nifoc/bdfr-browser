@@ -9,15 +9,11 @@
 <br>
 
 <form method="get" action="/search" class="row justify-content-center">
-  <div class="col-md-4">
-    <input type="text" class="form-control" placeholder="Post" name="post" />
+  <div class="col-sm-11">
+    <input type="text" class="form-control" placeholder="Search term" name="search" />
   </div>
 
-  <div class="col-md-4">
-    <input type="text" class="form-control" placeholder="Comment" name="comment" />
-  </div>
-
-  <div class="col-md-2 text-center">
+  <div class="col-sm-1 text-end">
     <button type="submit" class="btn btn-primary">Search</button>
   </div>
 </form>

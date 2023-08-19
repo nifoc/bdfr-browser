@@ -1,0 +1,61 @@
+<h2>Search: <%= search %></h2>
+
+<ul class="nav nav-pills" id="searchTab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab" aria-controls="posts" aria-selected="true">
+      Posts (<%= length(posts) %>)
+    </button>
+  </li>
+
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button" role="tab" aria-controls="comments" aria-selected="false">
+      Comments (<%= length(comments) %>)
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane active" id="posts" role="tabpanel" aria-labelledby="posts-tab" tabindex="0">
+    <div class="row text-center" style="margin-top: 5px;">
+      <div class="d-grid gap-2 col-12 mx-auto">
+        <%= for post <- posts do %>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><a href="/r/<%= post.subreddit %>/<%= post.date %>/<%= post.id %>"><%= post.title %></a></h5>
+              <h6 class="card-subtitle mb-2 text-body-secondary">
+                <small>
+                  <a href="/r/<%= post.subreddit %>/<%= post.date %>/"><%= post.subreddit %></a> - 
+                  <%= post.num_comments %> comment(s) -
+                  <%= Calendar.strftime(post.posted_at, "%Y-%m-%d") %>
+                </small>
+              </h6>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-pane" id="comments" role="tabpanel" aria-labelledby="comments-tab" tabindex="1">
+    <div class="row" style="margin-top: 5px;">
+      <div class="d-grid gap-2 col-12 mx-auto">
+        <%= for comment <- comments do %>
+          <div class="card" style="margin-bottom: 4px;">
+            <div class="card-body">
+              <blockquote class="blockquote mb-0" style="font-size: 1rem;">
+                <%= BdfrBrowser.RenderUtils.comment(comment.body) %>
+
+                <footer class="blockquote-footer">
+                  <a href="/user/<%= comment.author %>"><%= comment.author %></a>,
+                  <a href="/r/<%= comment.subreddit %>/<%= comment.post_date %>/<%= comment.post_id %>"><%= comment.post_title %></a>,
+                  <a href="/r/<%= comment.subreddit %>/<%= comment.post_date %>/"><%= comment.subreddit %></a>,
+                  <small><%= DateTime.to_iso8601(comment.posted_at) %></small>
+                </footer>
+              </blockquote>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -109,23 +109,15 @@ defmodule BdfrBrowser.HTTP.Plug do
   get "/search" do
     conn = Plug.Conn.fetch_query_params(conn)
     params = conn.query_params
+    search = params["search"]
 
-    {tpl, tpl_args} =
-      if not is_nil(params["comment"]) and String.length(params["comment"]) > 0 do
-        search = params["comment"]
+    tpl_args = [
+      search: search,
+      posts: search |> Post.search() |> Repo.all(),
+      comments: search |> Comment.search() |> Repo.all()
+    ]
 
-        {"search_comments", [search: search, comments: search |> Comment.search() |> Repo.all()]}
-      else
-        search = params["post"]
-
-        {"search_posts",
-         [
-           search: search,
-           posts: search |> Post.search() |> Repo.all()
-         ]}
-      end
-
-    content = render_template(tpl, tpl_args)
+    content = render_template("search", tpl_args)
 
     conn
     |> put_resp_header("content-type", "text/html; charset=utf-8")
