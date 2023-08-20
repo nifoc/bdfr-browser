@@ -98,6 +98,9 @@
               erlang
               elixir
               postgres
+
+              pkgs.ruby_3_2
+              pkgs.rubyPackages_3_2.nokogiri
             ] ++ lib.optionals isDarwin (with pkgs.darwin.apple_sdk.frameworks; [
               CoreFoundation
               CoreServices
@@ -138,6 +141,7 @@
               settings = {
                 environment = {
                   BDFR_BROWSER_BASE_DIRECTORY = "/Volumes/MediaScraper/Reddit";
+                  BDFR_BROWSER_CONFIG_FILE = "./priv/config.yml";
                   BDFR_BROWSER_REPO_USER = db-user;
                   BDFR_BROWSER_REPO_HOST = db-host;
                   RELEASE_DISTRIBUTION = "none";

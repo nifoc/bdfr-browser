@@ -38,3 +38,4 @@ erl_crash.dump
 /tags*
 /xref_graph.dot
 /xref_graph.png
+/scripts

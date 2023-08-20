@@ -1,4 +1,4 @@
-{ lib, beamPackages, overrides ? (x: y: {}) }:
+{ lib, beamPackages, overrides ? (x: y: { }) }:
 
 let
   buildRebar3 = lib.makeOverridable beamPackages.buildRebar3;
@@ -44,7 +44,7 @@ let
         sha256 = "1c4dgi8canscyjgddp22mjc69znvwy44wk3r7jrl2wvs6vv76fqn";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     db_connection = buildMix rec {
@@ -70,7 +70,7 @@ let
         sha256 = "1k7z418b6cj977wswpxsk5844xrxc1smaiqsmrqpf3pdjzsfbksk";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     earmark = buildMix rec {
@@ -96,7 +96,7 @@ let
         sha256 = "13qvlqnii8g6bcz6cl330vjwaan7jy30g1app3yvjncvf8rnhlid";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     ecto = buildMix rec {
@@ -135,7 +135,7 @@ let
         sha256 = "1p0myxmnjjds8bbg69dd6fvhk8q3n7lb78zd4qvmjajnzgdmw6a1";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     jason = buildMix rec {
@@ -161,7 +161,7 @@ let
         sha256 = "0p50h0ki8ay5sraiqxiajgwy1829bvyagj65bj9wjny4cnin83fs";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     plug = buildMix rec {
@@ -200,7 +200,7 @@ let
         sha256 = "0hnqgzc3zas7j7wycgnkkdhaji5farkqccy2n4p1gqj5ccfrlm16";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     postgrex = buildMix rec {
@@ -226,7 +226,7 @@ let
         sha256 = "1rfz5ld54pkd2w25jadyznia2vb7aw9bclck21fizargd39wzys9";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     telemetry = buildRebar3 rec {
@@ -239,7 +239,7 @@ let
         sha256 = "1mgyx9zw92g6w8fp9pblm3b0bghwxwwcbslrixq23ipzisfwxnfs";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     typed_struct = buildMix rec {
@@ -252,7 +252,7 @@ let
         sha256 = "0v8v3l8j7g3ran3f9gc2nc1mkj6kwfdr6kshm2cf3r0zlv1xa2y5";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     yamerl = buildRebar3 rec {
@@ -265,7 +265,7 @@ let
         sha256 = "0vjf9gnchvh4qfykrxf0jw0didvfrx54wdm26z41s1gicclxnsil";
       };
 
-      beamDeps = [];
+      beamDeps = [ ];
     };
 
     yaml_elixir = buildMix rec {
@@ -281,5 +281,6 @@ let
       beamDeps = [ yamerl ];
     };
   };
-in self
+in
+self
 
