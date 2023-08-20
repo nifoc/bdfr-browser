@@ -11,11 +11,9 @@
           </h6>
 
           <%= if length(chat.tags) > 0 do %>
-            <p>
-              <%= for tag <- chat.tags do %>
-                <span class="badge text-bg-info"><%= tag %></span>
-              <% end %>
-            </p>
+            <%= for tag <- chat.tags do %>
+              <span class="badge text-bg-info"><%= tag %></span>
+            <% end %>
           <% end %>
         </div>
       </div>
