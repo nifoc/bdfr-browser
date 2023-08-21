@@ -12,6 +12,7 @@ defmodule BdfrBrowser.Message do
     field :author, :string
     field :message, :string
     field :posted_at, :utc_datetime
+    field :bookmark, :string
 
     belongs_to :chat, Chat
   end

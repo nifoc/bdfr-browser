@@ -1,7 +1,12 @@
 <h2>Chats</h2>
 
 <%= for message <- messages do %>
-  <div class="row" style="margin-bottom: 2px;">
+  <div class="row" style="margin-bottom: 2px;"
+    id="msg-<%= message.id %>"
+    <%= unless is_nil(message.bookmark) do %>
+      data-bookmark="<%= message.bookmark %>"
+    <% end %>
+  >
     <div class="card">
       <div class="card-body" style="padding: 8px;">
         <blockquote class="blockquote mb-0" style="font-size: 1rem;">
@@ -10,9 +15,31 @@
           <footer class="blockquote-footer">
             <a href="/user/<%= message.author %>"><%= message.author %></a>,
             <small><%= DateTime.to_iso8601(message.posted_at) %></small>
+
+            <%= unless is_nil(message.bookmark) do %>
+              <span class="badge text-bg-secondary"><%= message.bookmark %></span>
+            <% end %>
           </footer>
         </blockquote>
       </div>
     </div>
   </div>
 <% end %>
+
+<script>
+  const bookmarks = document.querySelectorAll('[data-bookmark]');
+  const header = document.getElementsByTagName('h2')[0];
+  let container = document.createElement('p');
+
+  for (var i = 0; i < bookmarks.length; i++) {
+    let bookmarkElement = document.createElement('a');
+    bookmarkElement.href = `#${bookmarks[i].id}`;
+    bookmarkElement.innerText = bookmarks[i].dataset.bookmark;
+    bookmarkElement.className = "btn btn-secondary btn-sm";
+    bookmarkElement.setAttribute('role', 'button');
+
+    container.appendChild(bookmarkElement);
+  }
+
+  header.after(container);
+</script>
