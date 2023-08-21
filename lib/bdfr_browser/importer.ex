@@ -14,6 +14,7 @@ defmodule BdfrBrowser.Importer do
       field :fs_pid, pid
       field :post_changes, [Path.t()], default: MapSet.new()
       field :chat_changes, [Path.t()], default: MapSet.new()
+      field :last_import, non_neg_integer()
     end
   end
 
@@ -37,7 +38,7 @@ defmodule BdfrBrowser.Importer do
     end
   end
 
-  def posts_and_comments do
+  def posts_and_comments(last_import \\ nil) do
     _ = Logger.info("Importing posts and comments ...")
 
     result =
@@ -49,7 +50,7 @@ defmodule BdfrBrowser.Importer do
         for date <- list_folders(paths: [subreddit]) do
           _ = Logger.debug("Importing entries from `#{subreddit}' on `#{date}' ...")
 
-          for post <- read_posts(paths: [subreddit, date], ext: ".json") do
+          for post <- read_posts(paths: [subreddit, date], ext: ".json", last_import: last_import) do
             _ = Logger.debug("Importing `#{post["id"]}' from `#{subreddit}' ...")
 
             {:ok, post_record} = import_post(post, subreddit_record)
@@ -142,11 +143,11 @@ defmodule BdfrBrowser.Importer do
   end
 
   @impl true
-  def handle_cast(:background_import, state) do
+  def handle_cast(:background_import, %State{last_import: last_import} = state) do
     _ = subreddits()
-    _ = posts_and_comments()
+    _ = posts_and_comments(last_import)
     _ = chats()
-    {:noreply, state}
+    {:noreply, %State{state | last_import: System.os_time(:second)}}
   end
 
   @impl true
@@ -239,6 +240,7 @@ defmodule BdfrBrowser.Importer do
   defp read_posts(args) do
     posts = list_folders(args)
     sort = Keyword.get(args, :sort, :desc)
+    last_import = Keyword.get(args, :last_import)
 
     base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
     post_dir = Path.join([base_directory | Keyword.fetch!(args, :paths)])
@@ -246,11 +248,25 @@ defmodule BdfrBrowser.Importer do
     parsed_posts =
       for post <- posts do
         file_path = Path.join([post_dir, post])
-        parsed = file_path |> File.read!() |> Jason.decode!()
-        Map.put(parsed, "filename", post)
+
+        if is_nil(last_import) do
+          parsed = file_path |> File.read!() |> Jason.decode!()
+          Map.put(parsed, "filename", post)
+        else
+          {:ok, info} = File.stat(file_path, time: :posix)
+
+          if info.mtime > last_import do
+            parsed = file_path |> File.read!() |> Jason.decode!()
+            Map.put(parsed, "filename", post)
+          else
+            nil
+          end
+        end
       end
 
-    Enum.sort_by(parsed_posts, fn p -> p["created_utc"] end, sort)
+    parsed_posts
+    |> Enum.reject(&is_nil/1)
+    |> Enum.sort_by(fn p -> p["created_utc"] end, sort)
   end
 
   defp read_chats(args) do
