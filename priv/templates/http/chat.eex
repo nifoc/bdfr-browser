@@ -29,6 +29,7 @@
 <script>
   const bookmarks = document.querySelectorAll('[data-bookmark]');
   const header = document.getElementsByTagName('h2')[0];
+  const space = document.createTextNode(' ');
   let container = document.createElement('p');
 
   for (var i = 0; i < bookmarks.length; i++) {
@@ -39,6 +40,7 @@
     bookmarkElement.setAttribute('role', 'button');
 
     container.appendChild(bookmarkElement);
+    container.appendChild(space);
   }
 
   header.after(container);
