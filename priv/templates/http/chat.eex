@@ -28,19 +28,40 @@
 
 <script>
   const bookmarks = document.querySelectorAll('[data-bookmark]');
-  const header = document.getElementsByTagName('h2')[0];
-  let container = document.createElement('p');
 
-  for (var i = 0; i < bookmarks.length; i++) {
-    let bookmarkElement = document.createElement('a');
-    bookmarkElement.href = `#${bookmarks[i].id}`;
-    bookmarkElement.innerText = bookmarks[i].dataset.bookmark;
-    bookmarkElement.className = "btn btn-secondary btn-sm";
-    bookmarkElement.setAttribute('role', 'button');
+  if (bookmarks.length > 0) {
+    const header = document.getElementsByTagName('h2')[0];
 
-    container.appendChild(bookmarkElement);
-    container.appendChild(document.createTextNode(' '));
+    const container = document.createElement('div');
+    container.className = 'dropdown';
+
+    const dropdownButton = document.createElement('button');
+    dropdownButton.id = 'bookmarkDropdown';
+    dropdownButton.className = 'btn btn-secondary dropdown-toggle';
+    dropdownButton.setAttribute('type', 'button');
+    dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+    dropdownButton.setAttribute('aria-expanded', 'false');
+    dropdownButton.innerText = 'Bookmarks';
+
+    container.appendChild(dropdownButton);
+
+    const dropdownMenu = document.createElement('ul');
+    dropdownMenu.className = 'dropdown-menu';
+
+    for (var i = 0; i < bookmarks.length; i++) {
+      console.log(bookmarks[i]);
+      let liElement = document.createElement('li');
+      let bookmarkElement = document.createElement('a');
+      bookmarkElement.href = `#${bookmarks[i].id}`;
+      bookmarkElement.innerText = bookmarks[i].dataset.bookmark;
+      bookmarkElement.className = "dropdown-item";
+
+      liElement.appendChild(bookmarkElement);
+      dropdownMenu.appendChild(liElement);
+    }
+
+    container.appendChild(dropdownMenu);
+    header.after(container);
+    container.after(document.createElement('br'));
   }
-
-  header.after(container);
 </script>
