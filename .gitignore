@@ -19,6 +19,7 @@ erl_crash.dump
 # nix
 /.direnv
 /.elixir_ls
+/.lexical
 .pre-commit-config.yaml
 
 # Exclude releases
