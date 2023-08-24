@@ -208,9 +208,17 @@ defmodule BdfrBrowser.HTTP.Plug do
     post_vid = "#{post}*.{mp4,MP4}"
 
     %{
-      images: [post_dir, post_img] |> Path.join() |> Path.wildcard() |> Enum.map(&media_path/1),
-      videos: [post_dir, post_vid] |> Path.join() |> Path.wildcard() |> Enum.map(&media_path/1)
+      images: post_media_for_type(post_dir, post_img),
+      videos: post_media_for_type(post_dir, post_vid)
     }
+  end
+
+  defp post_media_for_type(post_dir, post_type) do
+    [post_dir, post_type]
+    |> Path.join()
+    |> Path.wildcard()
+    |> Enum.map(&media_path/1)
+    |> Enum.sort()
   end
 
   defp media_path(full_path) do
