@@ -204,8 +204,8 @@ defmodule BdfrBrowser.HTTP.Plug do
   defp post_media(post, args) do
     base_directory = Application.fetch_env!(:bdfr_browser, :base_directory)
     post_dir = Path.join([base_directory | Keyword.fetch!(args, :paths)])
-    post_img = "#{post}*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}"
-    post_vid = "#{post}*.{mp4,MP4}"
+    post_img = "#{post}*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp,WEBP}"
+    post_vid = "#{post}*.{mp4,MP4,webm,WEBM}"
 
     %{
       images: post_media_for_type(post_dir, post_img),
@@ -240,6 +240,8 @@ defmodule BdfrBrowser.HTTP.Plug do
       ".png" -> "image/png"
       ".gif" -> "image/gif"
       ".mp4" -> "video/mp4"
+      ".webp" -> "image/webp"
+      ".webm" -> "video/webm"
       ".js" -> "text/javascript"
       ".css" -> "text/css"
     end
