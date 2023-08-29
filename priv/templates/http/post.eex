@@ -5,7 +5,7 @@
   -
   <small><%= DateTime.to_iso8601(post.posted_at) %></small>
   -
-  <a href="https://reddit.com<%= post.permalink %>">Open reddit</a>
+  <a href="https://www.reddit.com<%= post.permalink %>" rel="noreferrer">Open reddit</a>
 </p>
 
 <%= unless is_nil(post.selftext) do %>
