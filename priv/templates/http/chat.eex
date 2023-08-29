@@ -13,7 +13,7 @@
           <%= BdfrBrowser.RenderUtils.message(message.message) %>
 
           <footer class="blockquote-footer">
-            <a href="/user/<%= message.author %>"><%= message.author %></a>,
+            <%= BdfrBrowser.RenderUtils.link_to_user(message.author) %>,
             <small><%= DateTime.to_iso8601(message.posted_at) %></small>
 
             <%= unless is_nil(message.bookmark) do %>

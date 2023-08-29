@@ -17,6 +17,9 @@ defmodule BdfrBrowser.RenderUtils do
     |> Earmark.as_html!()
   end
 
+  def link_to_user(name) when name in ~w([deleted] DELETED), do: name
+  def link_to_user(name), do: "<a href=\"/user/#{name}\">#{name}</a>"
+
   # Helper
 
   defp maybe_insert_image(<<"mxc://reddit.com/", filename::binary>> = msg, replacement) do

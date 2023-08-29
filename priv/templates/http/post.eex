@@ -1,7 +1,7 @@
 <h2><%= post.title %></h2>
 
 <p>
-  <small><a href="/user/<%= post.author %>"><%= post.author %></a></small>
+  <small><%= BdfrBrowser.RenderUtils.link_to_user(post.author) %></small>
   -
   <small><%= DateTime.to_iso8601(post.posted_at) %></small>
   -

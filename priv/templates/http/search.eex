@@ -46,7 +46,7 @@
                 <%= BdfrBrowser.RenderUtils.comment(comment.body) %>
 
                 <footer class="blockquote-footer">
-                  <a href="/user/<%= comment.author %>"><%= comment.author %></a>,
+                  <%= BdfrBrowser.RenderUtils.link_to_user(comment.author) %>,
                   <a href="/r/<%= comment.subreddit %>/<%= comment.post_date %>/<%= comment.post_id %>"><%= comment.post_title %></a>,
                   <a href="/r/<%= comment.subreddit %>/<%= comment.post_date %>/"><%= comment.subreddit %></a>,
                   <small><%= DateTime.to_iso8601(comment.posted_at) %></small>

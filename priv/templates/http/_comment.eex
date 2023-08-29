@@ -9,7 +9,7 @@
         <% end %>
         
         <footer class="blockquote-footer">
-          <a href="/user/<%= comment.author %>"><%= comment.author %></a>,
+          <%= BdfrBrowser.RenderUtils.link_to_user(comment.author) %>,
           <small><%= DateTime.to_iso8601(comment.posted_at) %></small>
         </footer>
       </blockquote>
